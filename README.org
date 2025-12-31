@@ -1,0 +1,184 @@
+#+TITLE: google-calendar layer
+#+STARTUP: overview
+
+* Description
+This layer provides Google Calendar integration for Spacemacs using
+~org-gcal~ and ~calfw~.
+
+It allows you to:
+- Sync Google Calendar events into Org files
+- View calendars using calfw (day / week / month views)
+- Open specific calendar files or the current Org buffer in calfw
+- Post and delete calendar entries from Org
+
+* Features
+- Declarative calendar configuration via ~google-calendar-calendars~
+- calfw-based visual calendar UI
+- Evil-friendly keybindings in ~calfw-calendar-mode~
+- Structured leader-key hierarchy under ~SPC a g~
+
+* Installation
+This layer is intended to be used as a private Spacemacs layer.
+
+1. Place this directory under:
+   =~/.spacemacs.d/layers/google-calendar/=
+
+   For example:
+
+   #+BEGIN_SRC sh
+   git clone https://github.com/tofuya/spacemacs-google-calendar.git \
+     ~/.spacemacs.d/layers/google-calendar
+   #+END_SRC
+
+2.  Add the layer to ~dotspacemacs-configuration-layers~:
+
+#+BEGIN_SRC emacs-lisp
+google-calendar
+#+END_SRC
+
+This layer depends on:
+- org-gcal
+- calfw (using the develop branch)
+
+* Google Calendar setup (org-gcal)
+This layer relies on ~org-gcal~ and requires initial setup using
+Google Developers Console.
+
+You must:
+1. Create a project in Google Developers Console
+2. Enable the Google Calendar API
+3. Create OAuth 2.0 credentials
+4. Configure ~org-gcal-client-id~ and ~org-gcal-client-secret~
+
+Please follow the official org-gcal setup guide:
+https://github.com/kidd/org-gcal.el#installation
+
+After completing the setup, calendar synchronization can be triggered via:
+~SPC a g s f~
+
+* Configuration
+** Calendar definitions
+Calendars are configured via ~google-calendar-calendars~.
+
+Each entry is a plist with at least:
+- ~:calendar-id~ — Google Calendar ID
+- ~:file~ — Org file to sync events into
+
+Example:
+
+#+BEGIN_SRC emacs-lisp
+(setq google-calendar-calendars
+      '((:calendar-id "your-calendar-id@gmail.com"
+         :file "~/org/calendar.org")
+        (:calendar-id "another-id@group.calendar.google.com"
+         :file "~/org/work.org")))
+#+END_SRC
+
+The configuration is automatically applied to ~org-gcal-file-alist~ after
+~org-gcal~ is loaded.
+
+** Auto-generated open commands
+
+This layer provides a helper function
+~google-calendar-define-open-commands~ which defines interactive
+commands to open calendar org files based on
+~google-calendar-calendars~.
+
+After calling this function, commands with the following naming
+pattern become available:
+
+- ~google-calendar-open-<label>~
+
+Where ~<label>~ corresponds to the ~:label~ property of each calendar
+definition.
+
+Example:
+
+#+begin_src emacs-lisp
+(setq google-calendar-calendars
+      '((:label "timeblocks"
+                :calendar-id "xxx"
+                :file "~/org/gcal-timeblocks.org")
+        (:label "fixed"
+                :calendar-id "yyy"
+                :file "~/org/gcal-fixed.org")
+))
+
+(google-calendar-define-open-commands)
+
+(spacemacs/set-leader-keys
+  "a g t" #'google-calendar-open-timeblocks
+  "a g d" #'google-calendar-open-fixed)
+#+end_src
+
+Note:
+
+~google-calendar-define-open-commands~ must be called after
+~google-calendar-calendars~ is defined.
+
+* Key bindings
+All commands are under the ~SPC a g~ prefix.
+
+** View
+| Key | Description |
+|-----+-------------|
+| ~SPC a g v g~ | Select a Google Calendar and show it in calfw |
+| ~SPC a g v f~ | Show a specific Org file in calfw |
+| ~SPC a g v .~ | Show current Org buffer in calfw |
+
+** Open
+| Key | Description |
+|-----+-------------|
+| ~SPC a g o f~ | Open a calendar Org file |
+
+** Sync
+| Key | Description |
+|-----+-------------|
+| ~SPC a g s f~ | Fetch events from Google Calendar |
+| ~SPC a g s r~ | Reload OAuth client ID and secret |
+
+** Entry
+| Key | Description |
+|-----+-------------|
+| ~SPC a g e p~ | Post Org entry at point to Google Calendar |
+| ~SPC a g e d~ | Delete Google Calendar entry at point |
+
+* calfw Evil keybindings
+When viewing calendars in ~calfw-calendar-mode~, the following Evil
+normal-state bindings are available:
+
+** Navigation
+| Key | Action |
+|-----+--------|
+| h / l | Previous / next day |
+| k / j | Previous / next week |
+| K / J | Previous / next month |
+| ^ / $ | Week begin / end |
+
+** View control
+| Key | Action |
+|-----+--------|
+| H / L | Move timeline |
+| t | Go to today |
+| g | Go to specific date |
+
+** View modes
+| Key | Action |
+|-----+--------|
+| M | Month view |
+| W | Week view |
+| T | Two-week view |
+| D | Day view |
+
+** Actions
+| Key | Action |
+|-----+--------|
+| TAB | Next item |
+| RET | Open item |
+| SPC | Show details |
+| r | Refresh |
+| q | Quit calendar |
+
+* Notes
+- OAuth credentials must be configured for ~org-gcal~ beforehand.
+- Initial sync may take some time depending on calendar size.
