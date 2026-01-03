@@ -1,6 +1,7 @@
 (defconst google-calendar-packages
   '(org-gcal
-    (calfw :location (recipe :fetcher github :repo "kiwanami/emacs-calfw" :branch "develop"))))
+    (calfw :location (recipe :fetcher github :repo "kiwanami/emacs-calfw" :branch "develop"))
+    (calfw-org :location (recipe :fetcher github :repo "kiwanami/emacs-calfw" :branch "develop"))))
 
 (defun google-calendar/init-org-gcal ()
   (use-package org-gcal

@@ -38,41 +38,42 @@ KEYS are passed as strings or symbols."
 (google-calendar-bind 'entry "p" #'org-gcal-post-at-point)
 (google-calendar-bind 'entry "d" #'org-gcal-delete-at-point)
 
-(with-eval-after-load 'evil
-  (evil-define-key 'normal calfw-calendar-mode-map
-    ;; Day / week navigation
-    (kbd "h") #'calfw-navi-previous-day-command
-    (kbd "l") #'calfw-navi-next-day-command
-    (kbd "k") #'calfw-navi-previous-week-command
-    (kbd "j") #'calfw-navi-next-week-command
+(with-eval-after-load 'calfw
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal calfw-calendar-mode-map
+      ;; Day / week navigation
+      (kbd "h") #'calfw-navi-previous-day-command
+      (kbd "l") #'calfw-navi-next-day-command
+      (kbd "k") #'calfw-navi-previous-week-command
+      (kbd "j") #'calfw-navi-next-week-command
 
-    ;; Week range
-    (kbd "^") #'calfw-navi-week-begin-command
-    (kbd "$") #'calfw-navi-week-end-command
+      ;; Week range
+      (kbd "^") #'calfw-navi-week-begin-command
+      (kbd "$") #'calfw-navi-week-end-command
 
-    ;; Month navigation
-    (kbd "K") #'calfw-navi-previous-month-command
-    (kbd "J") #'calfw-navi-next-month-command
+      ;; Month navigation
+      (kbd "K") #'calfw-navi-previous-month-command
+      (kbd "J") #'calfw-navi-next-month-command
 
-    ;; View shift (timeline)
-    (kbd "H") #'calfw-view-move-previous-command
-    (kbd "L") #'calfw-view-move-next-command
+      ;; View shift (timeline)
+      (kbd "H") #'calfw-view-move-previous-command
+      (kbd "L") #'calfw-view-move-next-command
 
-    ;; Jump
-    (kbd "t") #'calfw-navi-goto-today-command
-    (kbd "g") #'calfw-navi-goto-date-command
+      ;; Jump
+      (kbd "t") #'calfw-navi-goto-today-command
+      (kbd "g") #'calfw-navi-goto-date-command
 
-    ;; View switch (capital = mode change)
-    (kbd "M") #'calfw-change-view-month
-    (kbd "W") #'calfw-change-view-week
-    (kbd "T") #'calfw-change-view-two-weeks
-    (kbd "D") #'calfw-change-view-day
+      ;; View switch (capital = mode change)
+      (kbd "M") #'calfw-change-view-month
+      (kbd "W") #'calfw-change-view-week
+      (kbd "T") #'calfw-change-view-two-weeks
+      (kbd "D") #'calfw-change-view-day
 
-    ;; Refresh / quit
-    (kbd "r") #'calfw-refresh-calendar-buffer
-    (kbd "q") #'bury-buffer
+      ;; Refresh / quit
+      (kbd "r") #'calfw-refresh-calendar-buffer
+      (kbd "q") #'bury-buffer
 
-    ;; Item navigation
-    (kbd "TAB") #'calfw-navi-next-item-command
-    (kbd "RET") #'calfw-open-item-command
-    (kbd "SPC") #'calfw-show-details-command))
+      ;; Item navigation
+      (kbd "TAB") #'calfw-navi-next-item-command
+      (kbd "RET") #'calfw-open-item-command
+      (kbd "SPC") #'calfw-show-details-command)))
