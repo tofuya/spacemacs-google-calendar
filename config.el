@@ -1,9 +1,10 @@
 (defcustom google-calendar-calendars nil
   "Google Calendar definitions.
-Each entry is a plist with :calendar-id and :file."
+Each entry is a plist with :calendar-id, :file, and :label."
   :type '(repeat
           (plist :tag "Calendar"
                  :options ((:calendar-id string)
+                           (:label string)
                            (:file file))))
   :group 'google-calendar)
 
@@ -16,5 +17,8 @@ Each entry is a plist with :calendar-id and :file."
                           (plist-get c :file)))
                   google-calendar-calendars))))
 
-(with-eval-after-load 'org-gcal (google-calendar--apply-calendars))
-(when google-calendar-calendars (google-calendar-define-open-commands))
+(add-hook 'spacemacs-post-user-config-hook
+          (lambda ()
+            (when google-calendar-calendars
+              (google-calendar-define-open-commands)))
+          90)

@@ -78,44 +78,38 @@ The configuration is automatically applied to ~org-gcal-file-alist~ after
 ~org-gcal~ is loaded.
 
 ** Auto-generated open commands
+This layer automatically generates interactive commands to open
+calendar org files based on ~google-calendar-calendars~.
 
-This layer provides a helper function
-~google-calendar-define-open-commands~ which defines interactive
-commands to open calendar org files based on
-~google-calendar-calendars~.
-
-After calling this function, commands with the following naming
-pattern become available:
-
+Commands are automatically created after ~dotspacemacs/user-config~
+executes, following this naming pattern:
 - ~google-calendar-open-<label>~
 
 Where ~<label>~ corresponds to the ~:label~ property of each calendar
 definition.
 
 Example:
-
 #+begin_src emacs-lisp
+;; In dotspacemacs/user-config
 (setq google-calendar-calendars
       '((:label "timeblocks"
-                :calendar-id "xxx"
+                :calendar-id "xxx@gmail.com"
                 :file "~/org/gcal-timeblocks.org")
         (:label "fixed"
-                :calendar-id "yyy"
-                :file "~/org/gcal-fixed.org")
-))
+                :calendar-id "yyy@group.calendar.google.com"
+                :file "~/org/gcal-fixed.org")))
 
-(google-calendar-define-open-commands)
-
+;; Commands are automatically generated - no manual call needed!
+;; Just bind them to your preferred keys:
 (spacemacs/set-leader-keys
-  "a g t" #'google-calendar-open-timeblocks
-  "a g d" #'google-calendar-open-fixed)
+  "agt" #'google-calendar-open-timeblocks
+  "agd" #'google-calendar-open-fixed)
 #+end_src
 
 Note:
-
-~google-calendar-define-open-commands~ must be called after
-~google-calendar-calendars~ is defined.
-
+The layer uses ~spacemacs-post-user-config-hook~ to ensure commands
+are generated after your calendar configuration is loaded. No manual
+invocation of ~google-calendar-define-open-commands~ is required.
 * Key bindings
 All commands are under the ~SPC a g~ prefix.
 

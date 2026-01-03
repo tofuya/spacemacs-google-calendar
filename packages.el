@@ -4,7 +4,11 @@
 
 (defun google-calendar/init-org-gcal ()
   (use-package org-gcal
-    :defer t))
+    :defer t
+    :init
+    (google-calendar--apply-calendars)
+    :config
+    (google-calendar--apply-calendars)))
 
 (defun google-calendar/init-calfw-org ()
   (use-package calfw-org
