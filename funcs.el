@@ -109,3 +109,33 @@ FILES is a list of org file paths."
   (google-calendar--calfw-open-files
    (list buffer-file-name)
    (file-name-nondirectory buffer-file-name)))
+
+(defun google-calendar--calendar-alist ()
+  "Return alist of (label . calendar-id) from `google-calendar-calendars`."
+  (mapcar (lambda (c)
+            (cons (plist-get c :label)
+                  (plist-get c :calendar-id)))
+          google-calendar-calendars))
+
+(defun google-calendar-select-calendar-id ()
+  "Prompt user to select a calendar and return its calendar-id."
+  (let* ((alist (google-calendar--calendar-alist))
+         (choice (completing-read "Calendar: " alist nil t)))
+    (cdr (assoc choice alist))))
+
+(defconst google-calendar-post-entry-template
+  ":PROPERTIES:
+:calendar-id: %s
+:org-gcal-managed: org
+:END:
+:org-gcal:
+
+:END:
+"
+  "Template for org-gcal entry.")
+
+(defun google-calendar-insert-org-gcal-skeleton ()
+  "Insert org-gcal posting skeleton at point."
+  (interactive)
+  (insert (format google-calendar-post-entry-template
+                  (google-calendar-select-calendar-id))))

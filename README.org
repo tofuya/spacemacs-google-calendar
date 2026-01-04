@@ -10,12 +10,14 @@ It allows you to:
 - View calendars using calfw (day / week / month views)
 - Open specific calendar files or the current Org buffer in calfw
 - Post and delete calendar entries from Org
+- Insert org-gcal posting skeletons interactively
 
 * Features
 - Declarative calendar configuration via ~google-calendar-calendars~
 - calfw-based visual calendar UI
 - Evil-friendly keybindings in ~calfw-calendar-mode~
 - Structured leader-key hierarchy under ~SPC a g~
+- Interactive calendar selection for org-gcal posting
 
 * Installation
 This layer is intended to be used as a private Spacemacs layer.
@@ -30,7 +32,7 @@ This layer is intended to be used as a private Spacemacs layer.
      ~/.spacemacs.d/layers/google-calendar
    #+END_SRC
 
-2.  Add the layer to ~dotspacemacs-configuration-layers~:
+2. Add the layer to ~dotspacemacs-configuration-layers~:
 
 #+BEGIN_SRC emacs-lisp
 google-calendar
@@ -60,7 +62,8 @@ After completing the setup, calendar synchronization can be triggered via:
 ** Calendar definitions
 Calendars are configured via ~google-calendar-calendars~.
 
-Each entry is a plist with at least:
+Each entry is a plist with:
+- ~:label~ — short identifier used for commands and UI
 - ~:calendar-id~ — Google Calendar ID
 - ~:file~ — Org file to sync events into
 
@@ -68,48 +71,83 @@ Example:
 
 #+BEGIN_SRC emacs-lisp
 (setq google-calendar-calendars
-      '((:calendar-id "your-calendar-id@gmail.com"
-         :file "~/org/calendar.org")
-        (:calendar-id "another-id@group.calendar.google.com"
-         :file "~/org/work.org")))
+      '((:label "timeblocks"
+         :calendar-id "your-calendar-id@gmail.com"
+         :file "~/org/gcal-timeblocks.org")
+        (:label "fixed"
+         :calendar-id "another-id@group.calendar.google.com"
+         :file "~/org/gcal-fixed.org")))
 #+END_SRC
 
-The configuration is automatically applied to ~org-gcal-file-alist~ after
-~org-gcal~ is loaded.
+The configuration is automatically applied to ~org-gcal-file-alist~
+when ~org-gcal~ is loaded.
 
 ** Auto-generated open commands
 This layer automatically generates interactive commands to open
 calendar org files based on ~google-calendar-calendars~.
 
-Commands are automatically created after ~dotspacemacs/user-config~
-executes, following this naming pattern:
+Commands are created after ~dotspacemacs/user-config~ executes,
+using the following naming pattern:
+
 - ~google-calendar-open-<label>~
 
-Where ~<label>~ corresponds to the ~:label~ property of each calendar
-definition.
-
 Example:
-#+begin_src emacs-lisp
-;; In dotspacemacs/user-config
+
+#+BEGIN_SRC emacs-lisp
+;; Only configuration is required
 (setq google-calendar-calendars
       '((:label "timeblocks"
-                :calendar-id "xxx@gmail.com"
-                :file "~/org/gcal-timeblocks.org")
+         :calendar-id "xxx@gmail.com"
+         :file "~/org/gcal-timeblocks.org")
         (:label "fixed"
-                :calendar-id "yyy@group.calendar.google.com"
-                :file "~/org/gcal-fixed.org")))
+         :calendar-id "yyy@group.calendar.google.com"
+         :file "~/org/gcal-fixed.org")))
 
-;; Commands are automatically generated - no manual call needed!
-;; Just bind them to your preferred keys:
-(spacemacs/set-leader-keys
-  "agt" #'google-calendar-open-timeblocks
-  "agd" #'google-calendar-open-fixed)
-#+end_src
+;; Commands are generated automatically:
+;; google-calendar-open-timeblocks
+;; google-calendar-open-fixed
+#+END_SRC
 
-Note:
-The layer uses ~spacemacs-post-user-config-hook~ to ensure commands
-are generated after your calendar configuration is loaded. No manual
-invocation of ~google-calendar-define-open-commands~ is required.
+No manual invocation of ~google-calendar-define-open-commands~ is needed.
+
+* Posting events to Google Calendar
+This layer provides a helper command to quickly prepare an Org entry
+for posting to Google Calendar using ~org-gcal~.
+
+Instead of manually writing required properties, you can insert a
+pre-filled posting skeleton and select the target calendar interactively.
+
+** Insert org-gcal posting skeleton
+Run the following command at the heading you want to post:
+
+~SPC a g e i~
+or
+~M-x google-calendar-insert-org-gcal-skeleton~
+
+This will:
+1. Prompt you to select a calendar (based on ~google-calendar-calendars~)
+2. Insert the required ~org-gcal~ properties automatically
+
+The inserted skeleton looks like this:
+
+#+BEGIN_SRC org
+:PROPERTIES:
+:calendar-id: <selected-calendar-id>
+:org-gcal-managed: org
+:END:
+:org-gcal:
+
+:END:
+#+END_SRC
+
+After filling in the entry contents, you can post it using:
+
+~SPC a g e p~
+
+** Notes
+- The calendar list is derived from ~google-calendar-calendars~
+- This command is optional but recommended for consistent org-gcal usage
+
 * Key bindings
 All commands are under the ~SPC a g~ prefix.
 
@@ -136,6 +174,7 @@ All commands are under the ~SPC a g~ prefix.
 |-----+-------------|
 | ~SPC a g e p~ | Post Org entry at point to Google Calendar |
 | ~SPC a g e d~ | Delete Google Calendar entry at point |
+| ~SPC a g e i~ | Insert org-gcal posting skeleton |
 
 * calfw Evil keybindings
 When viewing calendars in ~calfw-calendar-mode~, the following Evil
@@ -176,3 +215,5 @@ normal-state bindings are available:
 * Notes
 - OAuth credentials must be configured for ~org-gcal~ beforehand.
 - Initial sync may take some time depending on calendar size.
+- All commands are generated and bound by the layer; no user-side
+  function calls are required.

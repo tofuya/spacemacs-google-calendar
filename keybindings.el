@@ -37,6 +37,7 @@ KEYS are passed as strings or symbols."
 (google-calendar-bind 'sync "r" #'org-gcal-reload-client-id-secret)
 (google-calendar-bind 'entry "p" #'org-gcal-post-at-point)
 (google-calendar-bind 'entry "d" #'org-gcal-delete-at-point)
+(google-calendar-bind 'entry "i" #'google-calendar-insert-org-gcal-skeleton)
 
 (with-eval-after-load 'calfw
   (with-eval-after-load 'evil
